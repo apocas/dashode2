@@ -1,0 +1,72 @@
+<html>
+
+<head>
+  <title>dashode</title>
+  <link href="css/main.css" rel="stylesheet" type="text/css">
+
+  <link href="css/rickshaw.css" rel="stylesheet" type="text/css">
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.15/jquery-ui.min.js"></script>
+
+  <script src="vendors/d3.v3.js"></script>
+  <script src="vendors/rickshaw.js"></script>
+
+  <script src="js/codeChart.js"></script>
+  <script src="js/cacheChart.js"></script>
+  <script src="js/verbChart.js"></script>
+  <script src="js/bandwidthChart.js"></script>
+  <script src="js/gauge.js"></script>
+  <script src="js/gaugesChart.js"></script>
+  <script src="js/main.js"></script>
+</head>
+
+<body>
+
+  <div id="content1" class="content">
+    <div id="container1" class="container">
+      <div id="placeHolder1" class="placeholder"></div>
+      <div id="placeHolder1Legend"></div>
+    </div>
+    <div id="container2" class="container">
+      <div id="placeHolder2" class="placeholder"></div>
+      <div id="placeHolder2Legend"></div>
+    </div>
+    <div id="container4" class="container">
+      <div id="placeHolder4" class="placeholder"></div>
+      <div id="placeHolder4Legend"></div>
+    </div>
+    <div id="container3" class="container">
+      <div id="placeHolder3" class="placeholder"></div>
+      <div id="placeHolder3Legend"></div>
+    </div>
+  </div>
+
+  <div id="content2" class="content">
+    <div id="containerG4" class="container">
+      <select name="hostname" id="hostname" style="width: 100%;">
+        <option selected="selected">All</option>
+      </select>
+      <button type="button" onclick="clearCharts()" id="btnClear">Clear</button>
+    </div>
+    <div id="containerG1" class="container">
+      <span id="requestsGauge"></span>
+    </div>
+    <div id="containerG2" class="container">
+      <span id="bwGauge"></span>
+    </div>
+    <div id="containerG3" class="container">
+      <span id="errorsGauge"></span>
+    </div>
+    <div id="containerG5" class="container" style="font-size: 12; line-height: 1.1; word-wrap: break-word;">
+      <span id="errorsGauge"></span>
+    </div>
+  </div>
+
+  <div id="footer">
+    dashode - <a href="https://github.com/apocas/dashode2" target="_blank">Github</a>
+  </div>
+
+</body>
+
+</html>
