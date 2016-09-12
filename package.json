@@ -7,9 +7,10 @@
     "apocas <petermdias@gmail.com>"
   ],
   "dependencies": {
-    "express": "4.11.x",
-    "async": "*",
-    "colors": "*"
+    "express": "4.14.x",
+    "body-parser": "1.15.x",
+    "async": "2.0.x",
+    "colors": "1.1.x"
   },
   "main": "./main",
   "engines": {
