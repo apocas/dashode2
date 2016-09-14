@@ -29,7 +29,7 @@ Station.prototype.init = function() {
   var self = this;
 
   this.httpServer.listen(this.port);
-  console.log('Collector server listening on port ' + this.port);
+  console.log('(server) Collector server listening on port ' + this.port);
 
   this.app.post('/stats/:hostname/push', function(req, res) {
     var hostname = req.params.hostname;
@@ -105,7 +105,7 @@ Station.prototype.process = function(hostname, packet) {
   }
 
   if (this.collectors[hostname] === undefined) {
-    console.log('New hostname found: ' + hostname);
+    console.log('(server) New collector found: ' + hostname);
     this.collectors[hostname] = new Collector(hostname);
   }
   this.collectors[hostname].process(payload.requests);

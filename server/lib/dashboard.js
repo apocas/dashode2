@@ -2,7 +2,7 @@ var express = require('express');
 
 var Dashboard = function(port, station) {
   this.station = station;
-  
+
   this.port = port;
   this.app = express();
   this.app.use(express.static(__dirname + '/../static'));
@@ -14,7 +14,7 @@ Dashboard.prototype.init = function() {
   var self = this;
 
   this.httpServer.listen(this.port);
-  console.log('Dashboard listening on port ' + this.port);
+  console.log('(server) Dashboard server listening on port ' + this.port);
 
   this.app.get('/stats/:hostname', function(req, res) {
     var keys = Object.keys(self.station.collectors);
@@ -27,10 +27,10 @@ Dashboard.prototype.init = function() {
     var outputCacheStats;
 
     for (var i = 0; i < keys.length; i++) {
-      var server = self.station.collectors[keys[i]];
+      var collector = self.station.collectors[keys[i]];
       if (hostname === keys[i] || hostname === undefined) {
-        outputStats = server.appendStatistics(outputStats, server.statistics);
-        outputCacheStats = server.appendData(outputCacheStats, server.cacheStatistics);
+        outputStats = collector.appendStatistics(outputStats, collector.statistics);
+        outputCacheStats = collector.appendData(outputCacheStats, collector.cacheStatistics);
       }
     }
 

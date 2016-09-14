@@ -1,0 +1,4 @@
+{
+  "servers": [],
+  "path": "/var/log/nginx/access.log"
+}

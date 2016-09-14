@@ -1,6 +1,6 @@
 {
   "name": "dashode2",
-  "description": "Dashode2 server.",
+  "description": "Dashode2",
   "version": "0.0.1",
   "author": "Pedro Dias <petermdias@gmail.com>",
   "maintainers": [
@@ -10,7 +10,9 @@
     "express": "4.14.x",
     "body-parser": "1.15.x",
     "async": "2.0.x",
-    "colors": "1.1.x"
+    "colors": "1.1.x",
+    "tail": "1.2.x",
+    "request": "2.74.x"
   },
   "main": "./main",
   "engines": {
