@@ -39,11 +39,11 @@ Station.prototype.init = function() {
 
   setInterval(function() {
     self.calculate();
-  }, 2000);
+  }, 1000);
 
   setInterval(function() {
     self.calculateTop();
-  }, 10000);
+  }, 5000);
 };
 
 Station.prototype.calculate = function() {

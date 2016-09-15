@@ -85,7 +85,7 @@ BandwidthChart.prototype.formatData = function(data) {
 
   this.points[0].data.push({
     'x': parseInt(d.getTime() / 1000),
-    'y': parseInt(data.bandwidth / 125000)
+    'y': parseInt(data.bandwidth)
   });
 
   if (this.points[0].data.length > this.graphSize) {

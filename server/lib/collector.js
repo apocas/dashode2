@@ -21,6 +21,8 @@ var Collector = function(hostname) {
     'requests': 0
   };
 
+  this.lastUpdate = undefined;
+
   this.cacheStatisticsBuffer = {};
 
   this.statistics = this.statisticsBuffer;
@@ -62,7 +64,7 @@ Collector.prototype.process = function(requests) {
     }
 
     if (req.cache !== undefined) {
-      if(req.cache === null) {
+      if (req.cache === null) {
         req.cache = '-';
       }
       if (!this.cacheStatisticsBuffer[req.cache]) {
@@ -81,6 +83,19 @@ Collector.prototype.clearBuffer = function() {
 
   this.statistics = this.statisticsBuffer;
   this.cacheStatistics = this.cacheStatisticsBuffer;
+
+  this.statistics.bandwidth = this.statistics.bandwidth / 125000;
+
+  if (this.lastUpdate) {
+    var now = new Date().getTime() / 1000;
+    this.statistics.requestspers = this.statistics.requests / (now - this.lastUpdate);
+    this.statistics.bandwidthpers = this.statistics.bandwidth / (now - this.lastUpdate);
+  } else {
+    this.statistics.requestspers = 0;
+    this.statistics.bandwidthpers = 0;
+  }
+
+  this.lastUpdate = new Date().getTime() / 1000;
 
   this.statisticsBuffer = {
     'codes': {
@@ -130,7 +145,9 @@ Collector.prototype.appendStatistics = function(dest, orig) {
       'codes': {},
       'verbs': {},
       'bandwidth': 0,
-      'requests': 0
+      'requests': 0,
+      'bandwidthpers': 0,
+      'requestspers': 0
     };
   }
   if (!orig) {
@@ -142,6 +159,8 @@ Collector.prototype.appendStatistics = function(dest, orig) {
 
   dest.bandwidth += orig.bandwidth;
   dest.requests += orig.requests;
+  dest.bandwidthpers += orig.bandwidthpers;
+  dest.requestspers += orig.requestspers;
 
   return dest;
 };

@@ -16,8 +16,6 @@ GaugesChart.prototype.init = function() {
   this.gauges.requests = this.createGauge('requestsGauge', 'Req/s', 0, 50);
   this.gauges.bw = this.createGauge('bwGauge', 'MBps', 0, 1, true);
   this.gauges.errors = this.createGauge('errorsGauge', 'Error %', 0, 100);
-
-  this.lastUpdate = new Date().getTime() / 1000;
 };
 
 GaugesChart.prototype.createGauge = function(container, label, min, max, decimalc) {
@@ -60,10 +58,8 @@ GaugesChart.prototype.appendData = function(data) {
 
 GaugesChart.prototype.formatData = function(data) {
   var counter = 0;
-  var totalBW = data.bandwidth;
   var errors = data.codes['400'] + data.codes['500'] + data.codes.other;
 
-  totalBW = totalBW / 125000;
   errors = parseInt((errors / data.requests) * 100);
 
   if (isNaN(errors)) {
@@ -71,19 +67,16 @@ GaugesChart.prototype.formatData = function(data) {
   }
 
   this.gauges.errors.data = errors;
-  var now = new Date().getTime() / 1000;
 
-  var valueBW = parseInt(totalBW / (now - this.lastUpdate));
+  var valueBW = parseInt(data.bandwidth);
   if (this.gauges.bw.config.max < valueBW) {
     this.gauges.bw = this.createGauge('bwGauge', 'MBps', 0, valueBW + 1, true);
   }
   this.gauges.bw.data = valueBW;
 
-  var valueReqs = parseInt(data.requests / (now - this.lastUpdate));
+  var valueReqs = parseInt(data.requestspers);
   if (this.gauges.requests.config.max < valueReqs) {
     this.gauges.requests = this.createGauge('requestsGauge', 'Req/s', 0, valueReqs);
   }
   this.gauges.requests.data = valueReqs;
-
-  this.lastUpdate = now;
 };
