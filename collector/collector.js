@@ -9,7 +9,7 @@ var Tail = require('tail').Tail,
 
 var Collector = function(serverHostname) {
   this.requests = [];
-  this.servers = [serverHostname];
+  this.servers = [new Server(os.hostname(), serverHostname)];
 };
 
 Collector.prototype.init = function() {
@@ -21,7 +21,7 @@ Collector.prototype.init = function() {
   this.tail.on("line", function(data) {
     var req = parser(data);
 
-    if (req.remote_addr && req.remote_addr.indexOf(' ') === -1 && req.http_referer && req.http_referer.indexOf(' ') === -1 && req.http_method && req.http_method.indexOf(' ') === -1 && req.status && req.remote_user && req.remote_user.length <= 20) {
+    if (req.remote_addr && req.remote_addr.indexOf(' ') === -1 && req.host && req.host.indexOf(' ') === -1 && req.http_method && req.http_method.indexOf(' ') === -1 && req.status && req.remote_user) {
       self.requests.push(req);
     } else {
       console.log('Discarding request:');

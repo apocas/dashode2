@@ -12,7 +12,7 @@ function startServer(httpPort, collectorPort) {
 }
 
 function startCollector(serverHostname) {
-  var Collector = new Collector(serverHostname);
+  var collector = new Collector(serverHostname);
   collector.init();
 }
 
@@ -20,7 +20,7 @@ function startCollector(serverHostname) {
 var scenario = process.env.SCENARIO;
 
 if(process.argv.length > 2) {
-  scenario = process.argv.length[2];
+  scenario = process.argv[2];
 } else {
   scenario = scenario || 'collector';
 }

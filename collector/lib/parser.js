@@ -1,3 +1,5 @@
+//Original version from: https://github.com/jfhbrook/node-clf-parser
+
 module.exports = function(line) {
 
   var parsed = {};
@@ -25,11 +27,19 @@ module.exports = function(line) {
   }, {
     'body_bytes_sent': ' '
   }, {
-    'http_referer': ' "'
+    'host': ' "'
   }, {
     'http_user_agent': '" "'
   }, {
-    'http_x_forwarded_for': '"'
+    'http_x_forwarded_for': '" "'
+  }, {
+    'http_referer': ' '
+  }, {
+    'cache': ' '
+  }, {
+    'request_time': ' '
+  }, {
+    'upstream_response_time': ' '
   }].some(function(t) {
     var label = Object.keys(t)[0],
       delimiter = t[label],
@@ -57,10 +67,9 @@ module.exports = function(line) {
     field = line.substr(0, m.index);
     line = line.substr(m.index + delimiter.length);
 
-    parsed[label] = field;
+    parsed[label] = field.replace('"', '');
   });
 
-  var matches;
   if (parsed.request) {
     var matches = parsed.request.match(/([A-Z]+)\s+(\S+)\s+([A-Z]+\/[\d\.]+)/);
     if (matches) {

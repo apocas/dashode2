@@ -61,12 +61,14 @@ Collector.prototype.process = function(requests) {
       this.statisticsBuffer.bandwidth += req.body_bytes_sent;
     }
 
-    if (req.remote_user) {
-      var aux = req.remote_user.split(' ');
-      if (!this.cacheStatisticsBuffer[aux[2]]) {
-        this.cacheStatisticsBuffer[aux[2]] = 1;
+    if (req.cache !== undefined) {
+      if(req.cache === null) {
+        req.cache = '-';
+      }
+      if (!this.cacheStatisticsBuffer[req.cache]) {
+        this.cacheStatisticsBuffer[req.cache] = 1;
       } else {
-        this.cacheStatisticsBuffer[aux[2]]++;
+        this.cacheStatisticsBuffer[req.cache]++;
       }
     }
 

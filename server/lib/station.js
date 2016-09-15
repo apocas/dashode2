@@ -94,8 +94,8 @@ Station.prototype.process = function(hostname, packet) {
 
   for (var i = 0; i < payload.requests.length; i++) {
     var req = payload.requests[i];
-    if (req.http_referer) {
-      var domain = req.http_referer.replace('www.', '').replace(/"/g, '');
+    if (req.host) {
+      var domain = req.host.replace('www.', '').replace(/"/g, '');
       if (this.topHostnamesBuffer[domain] === undefined) {
         this.topHostnamesBuffer[domain] = 0;
       } else {

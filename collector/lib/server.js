@@ -4,6 +4,8 @@
  var Server = function(hostname, serverHostname) {
    this.hostname = hostname;
    this.serverHostname = serverHostname;
+
+   console.log('(collector) Dispatching to ' + serverHostname);
  };
 
  Server.prototype.send = function(data) {
