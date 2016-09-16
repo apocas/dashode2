@@ -11,11 +11,21 @@
  Server.prototype.send = function(data) {
    var self = this;
    //console.log(data);
-   request.post({
+
+   var opts = {
      'url': self.serverHostname + '/stats/' + self.hostname + '/push',
      'json': data
-   }, function(error, response, body) {
-     if(error) {
+   };
+
+   if (process.env.PASSWORD && process.env.USERNAME) {
+     opts.auth = {
+       'user': process.env.USERNAME,
+       'pass': process.env.PASSWORD
+     };
+   }
+
+   request.post(opts, function(error, response, body) {
+     if (error) {
        console.log('Error while dispatching log entry: ' + error);
      }
    });
