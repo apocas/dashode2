@@ -6,6 +6,7 @@ var cacheChart;
 var verbChart;
 var bandwidthChart;
 var gaugesChart;
+var timesChart;
 
 $(window).resize(function() {
   location.reload();
@@ -24,16 +25,19 @@ $(document).ready(function() {
   }
   rw++;
 
-  codeChart = new CodeChart('placeHolder1', {
+  codeChart = new CodeChart('codeHolder', {
     'size': maxPoints
   });
-  cacheChart = new CacheChart('placeHolder4', {
+  cacheChart = new CacheChart('cacheHolder', {
     'size': maxPoints
   });
-  verbChart = new VerbChart('placeHolder2', {
+  verbChart = new VerbChart('verbHolder', {
     'size': maxPoints
   });
-  bandwidthChart = new BandwidthChart('placeHolder3', {
+  bandwidthChart = new BandwidthChart('bwHolder', {
+    'size': maxPoints
+  });
+  timesChart = new TimesChart('timesHolder', {
     'size': maxPoints
   });
   gaugesChart = new GaugesChart({
@@ -43,10 +47,11 @@ $(document).ready(function() {
   $('#content1').css('width', w - rw - 20);
   $('#content2').css('width', rw);
 
-  $('#container1').css('height', h / 4);
-  $('#container2').css('height', h / 4);
-  $('#container3').css('height', h / 4);
-  $('#container4').css('height', h / 4);
+  $('#codeContainer').css('height', h / 5);
+  $('#verbContainer').css('height', h / 5);
+  $('#bwContainer').css('height', h / 5);
+  $('#cacheContainer').css('height', h / 5);
+  $('#timesContainer').css('height', h / 5);
 
   init(rw * 1.1);
 });
@@ -56,6 +61,7 @@ function clearCharts() {
   cacheChart.clear();
   verbChart.clear();
   bandwidthChart.clear();
+  timesChart.clear();
 }
 
 function init(rw) {
@@ -66,6 +72,7 @@ function init(rw) {
   cacheChart.init();
   verbChart.init();
   bandwidthChart.init();
+  timesChart.init();
   gaugesChart.init();
 
   $("#hostname").change(function() {
@@ -77,6 +84,7 @@ function init(rw) {
       codeChart.appendData(data.statistics);
       verbChart.appendData(data.statistics);
       bandwidthChart.appendData(data.statistics);
+      timesChart.appendData(data.statistics);
       gaugesChart.appendData(data.statistics);
       populateHostname(data.hostnames);
       cacheChart.appendData(data);

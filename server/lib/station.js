@@ -1,64 +1,49 @@
 var net = require('net'),
   crypto = require('crypto'),
   async = require('async'),
-  Server = require('./server'),
+  Collector = require('./collector'),
   util = require('util'),
-  express = require('express');
+  express = require('express'),
+  bodyParser = require('body-parser');
 
 var Station = function(port) {
+  this.port = port;
+  this.app = express();
+  this.app.use(bodyParser.json());
+  this.app.use(function(err, req, res, next) {
+    console.log(err);
+    res.status(500).end();
+  });
+
+  this.httpServer = require('http').Server(this.app);
+
   this.topHostnamesBuffer = {};
   this.topHostnames = [];
   this.collectors = {};
 
   this.topErrors = undefined;
   this.topRequests = undefined;
-
-  this.algorithm = 'aes-256-ctr';
-  this.password = process.env.PASSWORD;
 };
 
 Station.prototype.init = function() {
   var self = this;
 
-  this.server = net.createServer(function(socket) {
-    console.log('Collector connected');
+  this.httpServer.listen(this.port);
+  console.log('(server) Collector server listening on port ' + this.port);
 
-    var buffer = '';
-
-    socket.on('error', function() {
-      console.log('Collector errored');
-    });
-
-    socket.on('end', function() {
-      console.log('Collector disconnected');
-    });
-
-    socket.on('data', function(received) {
-      buffer += received.toString('utf8');
-
-      var index = buffer.indexOf('\n');
-
-      if (index >= 0) {
-        self.process(buffer.slice(0, index));
-
-        if (index < buffer.length) {
-          buffer = buffer.slice(index + 1, buffer.length);
-        }
-      }
-    });
+  this.app.post('/stats/:hostname/push', function(req, res) {
+    var hostname = req.params.hostname;
+    self.process(hostname, req.body);
+    res.end();
   });
 
   setInterval(function() {
     self.calculate();
-  }, 2000);
+  }, 1000);
 
   setInterval(function() {
     self.calculateTop();
-  }, 10000);
-
-  this.server.listen(80, function() {
-    console.log('Central is now listening.');
-  });
+  }, 5000);
 };
 
 Station.prototype.calculate = function() {
@@ -103,31 +88,14 @@ Station.prototype.clearBuffers = function() {
   }
 };
 
-Station.prototype.process = function(packet) {
+Station.prototype.process = function(hostname, packet) {
   var self = this;
-  var hostname = packet.slice(0, packet.indexOf('#'));
-  var rawData = packet.slice(packet.indexOf('#') + 1, packet.length);
-
-  //console.log(hostname);
-  //console.log(rawData);
-
-  var payload = {};
-  try {
-    payload = JSON.parse(rawData);
-  } catch (error1) {
-    try {
-      payload = JSON.parse(self.decrypt(rawData));
-    } catch (error2) {
-      console.log(packet);
-      console.log('Invalid packet.');
-      return;
-    }
-  }
+  var payload = packet;
 
   for (var i = 0; i < payload.requests.length; i++) {
     var req = payload.requests[i];
-    if (req.http_referer) {
-      var domain = req.http_referer.replace('www.', '').replace(/"/g, '');
+    if (req.host) {
+      var domain = req.host.replace('www.', '').replace(/"/g, '');
       if (this.topHostnamesBuffer[domain] === undefined) {
         this.topHostnamesBuffer[domain] = 0;
       } else {
@@ -137,17 +105,10 @@ Station.prototype.process = function(packet) {
   }
 
   if (this.collectors[hostname] === undefined) {
-    console.log('New hostname found: ' + hostname);
-    this.collectors[hostname] = new Server(hostname);
+    console.log('(server) New collector found: ' + hostname);
+    this.collectors[hostname] = new Collector(hostname);
   }
   this.collectors[hostname].process(payload.requests);
-};
-
-Station.prototype.decrypt = function(text) {
-  var decipher = crypto.createDecipher(this.algorithm, this.password);
-  var dec = decipher.update(text, 'hex', 'utf8');
-  dec += decipher.final('utf8');
-  return dec;
 };
 
 module.exports = Station;

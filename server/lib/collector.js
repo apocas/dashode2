@@ -1,4 +1,4 @@
-var Server = function(hostname) {
+var Collector = function(hostname) {
   this.hostname = hostname;
   this.buffer = [];
 
@@ -18,8 +18,12 @@ var Server = function(hostname) {
       'other': 0
     },
     'bandwidth': 0,
-    'requests': 0
+    'requests': 0,
+    'requesttime': 0,
+    'upstreamtime': 0
   };
+
+  this.lastUpdate = undefined;
 
   this.cacheStatisticsBuffer = {};
 
@@ -27,7 +31,7 @@ var Server = function(hostname) {
   this.cacheStatistics = this.cacheStatisticsBuffer;
 };
 
-Server.prototype.process = function(requests) {
+Collector.prototype.process = function(requests) {
   this.buffer = this.buffer.concat(requests);
 
   for (var i = 0; i < requests.length; i++) {
@@ -61,12 +65,21 @@ Server.prototype.process = function(requests) {
       this.statisticsBuffer.bandwidth += req.body_bytes_sent;
     }
 
-    if (req.remote_user) {
-      var aux = req.remote_user.split(' ');
-      if (!this.cacheStatisticsBuffer[aux[2]]) {
-        this.cacheStatisticsBuffer[aux[2]] = 1;
+    if (req.request_time !== undefined && req.request_time !== null) {
+      this.statisticsBuffer.requesttime += parseFloat(req.request_time);
+    }
+    if (req.upstream_response_time !== undefined && req.upstream_response_time !== null) {
+      this.statisticsBuffer.upstreamtime += parseFloat(req.upstream_response_time);
+    }
+
+    if (req.cache !== undefined) {
+      if (req.cache === null) {
+        req.cache = '-';
+      }
+      if (!this.cacheStatisticsBuffer[req.cache]) {
+        this.cacheStatisticsBuffer[req.cache] = 1;
       } else {
-        this.cacheStatisticsBuffer[aux[2]]++;
+        this.cacheStatisticsBuffer[req.cache]++;
       }
     }
 
@@ -74,11 +87,30 @@ Server.prototype.process = function(requests) {
   }
 };
 
-Server.prototype.clearBuffer = function() {
+Collector.prototype.clearBuffer = function() {
   this.buffer = [];
 
   this.statistics = this.statisticsBuffer;
   this.cacheStatistics = this.cacheStatisticsBuffer;
+
+  this.statistics.bandwidth = this.statistics.bandwidth / 125000;
+
+  if (this.lastUpdate) {
+    var now = new Date().getTime() / 1000;
+    this.statistics.requestspers = this.statistics.requests / (now - this.lastUpdate);
+    this.statistics.bandwidthpers = this.statistics.bandwidth / (now - this.lastUpdate);
+  } else {
+    this.statistics.requestspers = 0;
+    this.statistics.bandwidthpers = 0;
+  }
+
+
+  if (this.statistics.requests > 0) {
+    this.statistics.requesttime = parseInt((this.statistics.requesttime / this.statistics.requests) * 1000);
+    this.statistics.upstreamtime = parseInt((this.statistics.upstreamtime / this.statistics.requests) * 1000);
+  }
+
+  this.lastUpdate = new Date().getTime() / 1000;
 
   this.statisticsBuffer = {
     'codes': {
@@ -96,17 +128,19 @@ Server.prototype.clearBuffer = function() {
       'other': 0
     },
     'bandwidth': 0,
-    'requests': 0
+    'requests': 0,
+    'requesttime': 0,
+    'upstreamtime': 0
   };
 
   this.cacheStatisticsBuffer = {};
 };
 
-Server.prototype.errors = function() {
+Collector.prototype.errors = function() {
   return this.statistics.codes['400'] + this.statistics.codes['500'] + this.statistics.codes.other;
 };
 
-Server.prototype.appendData = function(dest, orig) {
+Collector.prototype.appendData = function(dest, orig) {
   if (!dest) {
     dest = {};
   }
@@ -122,13 +156,17 @@ Server.prototype.appendData = function(dest, orig) {
   return dest;
 };
 
-Server.prototype.appendStatistics = function(dest, orig) {
+Collector.prototype.appendStatistics = function(dest, orig) {
   if (!dest) {
     dest = {
       'codes': {},
       'verbs': {},
       'bandwidth': 0,
-      'requests': 0
+      'requests': 0,
+      'bandwidthpers': 0,
+      'requestspers': 0,
+      'requesttime': 0,
+      'upstreamtime': 0
     };
   }
   if (!orig) {
@@ -140,8 +178,12 @@ Server.prototype.appendStatistics = function(dest, orig) {
 
   dest.bandwidth += orig.bandwidth;
   dest.requests += orig.requests;
+  dest.bandwidthpers += orig.bandwidthpers;
+  dest.requestspers += orig.requestspers;
+  dest.requesttime += orig.requesttime;
+  dest.upstreamtime += orig.upstreamtime;
 
   return dest;
 };
 
-module.exports = Server;
+module.exports = Collector;
