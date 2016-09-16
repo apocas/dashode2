@@ -10,7 +10,7 @@
 
  Server.prototype.send = function(data) {
    var self = this;
-   console.log(data);
+   //console.log(data);
    request.post({
      'url': self.serverHostname + '/stats/' + self.hostname + '/push',
      'json': data

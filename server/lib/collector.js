@@ -18,7 +18,9 @@ var Collector = function(hostname) {
       'other': 0
     },
     'bandwidth': 0,
-    'requests': 0
+    'requests': 0,
+    'requesttime': 0,
+    'upstreamtime': 0
   };
 
   this.lastUpdate = undefined;
@@ -63,6 +65,13 @@ Collector.prototype.process = function(requests) {
       this.statisticsBuffer.bandwidth += req.body_bytes_sent;
     }
 
+    if (req.request_time !== undefined && req.request_time !== null) {
+      this.statisticsBuffer.requesttime += parseFloat(req.request_time);
+    }
+    if (req.upstream_response_time !== undefined && req.upstream_response_time !== null) {
+      this.statisticsBuffer.upstreamtime += parseFloat(req.upstream_response_time);
+    }
+
     if (req.cache !== undefined) {
       if (req.cache === null) {
         req.cache = '-';
@@ -95,6 +104,12 @@ Collector.prototype.clearBuffer = function() {
     this.statistics.bandwidthpers = 0;
   }
 
+
+  if (this.statistics.requests > 0) {
+    this.statistics.requesttime = parseInt((this.statistics.requesttime / this.statistics.requests) * 1000);
+    this.statistics.upstreamtime = parseInt((this.statistics.upstreamtime / this.statistics.requests) * 1000);
+  }
+
   this.lastUpdate = new Date().getTime() / 1000;
 
   this.statisticsBuffer = {
@@ -113,7 +128,9 @@ Collector.prototype.clearBuffer = function() {
       'other': 0
     },
     'bandwidth': 0,
-    'requests': 0
+    'requests': 0,
+    'requesttime': 0,
+    'upstreamtime': 0
   };
 
   this.cacheStatisticsBuffer = {};
@@ -147,7 +164,9 @@ Collector.prototype.appendStatistics = function(dest, orig) {
       'bandwidth': 0,
       'requests': 0,
       'bandwidthpers': 0,
-      'requestspers': 0
+      'requestspers': 0,
+      'requesttime': 0,
+      'upstreamtime': 0
     };
   }
   if (!orig) {
@@ -161,6 +180,8 @@ Collector.prototype.appendStatistics = function(dest, orig) {
   dest.requests += orig.requests;
   dest.bandwidthpers += orig.bandwidthpers;
   dest.requestspers += orig.requestspers;
+  dest.requesttime += orig.requesttime;
+  dest.upstreamtime += orig.upstreamtime;
 
   return dest;
 };
