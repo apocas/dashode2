@@ -30,7 +30,7 @@ TimesChart.prototype.init = function() {
 
   this.graph = new Rickshaw.Graph({
     element: document.getElementById(self.placeholder),
-    renderer: 'area',
+    renderer: 'line',
     stroke: true,
     series: self.points
   });
@@ -70,7 +70,6 @@ TimesChart.prototype.draw = function() {
     width: $('#' + self.placeholder).width(),
     height: $('#' + self.placeholder).height()
   });
-  this.graph.renderer.unstack = true;
   this.graph.render();
   this.xAxis.render();
   this.yAxis.render();
@@ -93,11 +92,11 @@ TimesChart.prototype.formatData = function(data) {
 
   this.points[0].data.push({
     'x': parseInt(d.getTime() / 1000),
-    'y': parseInt(data.requesttime)
+    'y': parseInt(data.requesttime || 0)
   });
   this.points[1].data.push({
     'x': parseInt(d.getTime() / 1000),
-    'y': parseInt(data.upstreamtime)
+    'y': parseInt(data.upstreamtime || 0)
   });
 
   for (var i = 0; i < this.points.length; i++) {

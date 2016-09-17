@@ -34,6 +34,13 @@ Dashboard.prototype.init = function() {
       }
     }
 
+    if (outputStats.requesttime) {
+      outputStats.requesttime /= keys.length;
+    }
+    if (outputStats.upstreamtime) {
+      outputStats.upstreamtime /= keys.length;
+    }
+
     res.json({
       'statistics': outputStats,
       'hostnames': keys,

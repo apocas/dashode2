@@ -9,7 +9,9 @@ var net = require('net'),
 var Station = function(port) {
   this.port = port;
   this.app = express();
-  this.app.use(bodyParser.json());
+  this.app.use(bodyParser.json({
+    limit: "10mb"
+  }));
   this.app.use(function(err, req, res, next) {
     console.log(err);
     res.status(500).end();
