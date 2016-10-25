@@ -78,18 +78,3 @@ Licensed under the Apache license, version 2.0 (the "license"); You may not use 
     http://www.apache.org/licenses/LICENSE-2.0.html
 
 Unless required by applicable law or agreed to in writing, software distributed under the license is distributed on an "as is" basis, without warranties or conditions of any kind, either express or implied. See the license for the specific language governing permissions and limitations under the license.
-
-
-
-
-
-
-## scenarios
-### local
-
-### server
-HTTP_PORT
-COLLECTOR_PORT
-
-### collector (default)
-SERVER
