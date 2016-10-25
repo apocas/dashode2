@@ -1,6 +1,4 @@
-var net = require('net'),
-  crypto = require('crypto'),
-  async = require('async'),
+var async = require('async'),
   Collector = require('./collector'),
   util = require('util'),
   express = require('express'),

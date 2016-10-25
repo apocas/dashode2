@@ -9,7 +9,11 @@ var Tail = require('tail').Tail,
 
 var Collector = function(serverHostname) {
   this.requests = [];
-  this.servers = [new Server(os.hostname(), serverHostname)];
+  this.servers = [];
+
+  if(serverHostname) {
+    this.servers.push(new Server(os.hostname(), serverHostname));
+  }
 };
 
 Collector.prototype.init = function() {
