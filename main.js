@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 var Station = require('./server/lib/station');
 var Dashboard = require('./server/lib/dashboard');
 var Collector = require('./collector/collector');

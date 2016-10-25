@@ -8,7 +8,7 @@ It was designed to debug and monitor nginx instances but it should work with any
 
 ### Install
 
- * `npm install -g dashode`
+ * `npm install -g dashode2`
  * `dashode`
 
 ### Env variables
