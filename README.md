@@ -7,9 +7,9 @@ It was designed to debug and monitor nginx instances but it should work with any
 ## Usage
 
 ### Install
-
- * `npm install -g dashode2`
- * `dashode`
+ * `git clone https://github.com/apocas/dashode2`
+ * `npm install`
+ * `node main`
 
 ### Env variables
 
