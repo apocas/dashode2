@@ -17,5 +17,8 @@
   "main": "./main",
   "engines": {
     "node": ">= 0.8"
+  },
+  "bin": {
+    "dashode": "./main.js"
   }
 }
