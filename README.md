@@ -39,7 +39,7 @@ It was designed to debug and monitor nginx instances but it should work with any
  * `log_format  main  '$remote_addr - $remote_user - [$time_local] "$request" '
                       '$status $body_bytes_sent "$host" '
                       '"$http_user_agent" "$http_x_forwarded_for" "$http_referer" '
-                      '$upstream_cache_status $request_time $upstream_response_time';`
+                      '$upstream_cache_status $request_time $upstream_response_time $scheme';`
 
 ## Authentication
 

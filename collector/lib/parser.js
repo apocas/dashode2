@@ -40,6 +40,8 @@ module.exports = function(line) {
     'request_time': ' '
   }, {
     'upstream_response_time': ' '
+  }, {
+    'scheme': ' '
   }].some(function(t) {
     var label = Object.keys(t)[0],
       delimiter = t[label],
