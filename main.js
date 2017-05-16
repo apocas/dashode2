@@ -32,9 +32,9 @@ if (scenario === 'server') {
   startServer(process.env.HTTP_PORT || 8081, process.env.COLLECTOR_PORT || 8080);
 } else if (scenario === 'collector') {
   console.log('(dashode2) Collector scenario detected, starting collector.');
-  startCollector(process.env.SERVER || 'http://127.0.0.1:8080');
+  startCollector();
 } else {
   console.log('(dashode2) Default local scenario detected, starting server and collector.');
   startServer(process.env.HTTP_PORT || 8081, process.env.COLLECTOR_PORT || 8080);
-  startCollector(process.env.SERVER || 'http://127.0.0.1:8080');
+  startCollector();
 }

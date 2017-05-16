@@ -33,7 +33,7 @@ module.exports = function(line) {
   }, {
     'http_x_forwarded_for': '" "'
   }, {
-    'http_referer': ' '
+    'http_referer': '" '
   }, {
     'cache': ' '
   }, {
