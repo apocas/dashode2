@@ -22,6 +22,20 @@ var Collector = function() {
   }
 };
 
+Collector.prototype.counter = function(key, sub, value) {
+  this.statsd.counter(key + '.' + STATSD_DOMAIN + '.' + sub, value);
+  if (process.env.STATSD_SUBDOMAIN) {
+    this.statsd.counter(key + '.' + STATSD_SUBDOMAIN + '.' + sub, value);
+  }
+};
+
+Collector.prototype.timing = function(key, sub, value) {
+  this.statsd.timing(key + '.' + STATSD_DOMAIN + '.' + sub, value);
+  if (process.env.STATSD_SUBDOMAIN) {
+    this.statsd.timing(key + '.' + STATSD_SUBDOMAIN + '.' + sub, value);
+  }
+};
+
 Collector.prototype.init = function() {
   var self = this;
 
@@ -40,7 +54,7 @@ Collector.prototype.init = function() {
       console.log('Discarding request:');
       console.log(req);
       if (self.statsd) {
-        self.statsd.counter('http.' + STATSD_DOMAIN + '.parser.nok', 1);
+        self.counter('http', 'parser.nok', 1);
       }
     }
   });
@@ -75,48 +89,48 @@ Collector.prototype.isValid = function(req) {
 
 Collector.prototype.processStatsd = function(req) {
   //this.statsd.counter('http.requests.' + req.host.replace('www.', '').replace(/"/g, '').replace(/\./g, '_'), 1);
-  this.statsd.counter('http.' + STATSD_DOMAIN + '.requests', 1);
+  this.counter('http', 'requests', 1);
 
   if (req.status >= 200 && req.status < 300) {
-    this.statsd.counter('http.' + STATSD_DOMAIN + '.codes.2xx', 1);
+    this.counter('http', 'codes.2xx', 1);
   } else if (req.status >= 300 && req.status < 400) {
-    this.statsd.counter('http.' + STATSD_DOMAIN + '.codes.3xx', 1);
+    this.counter('http', 'codes.3xx', 1);
   } else if (req.status >= 400 && req.status < 500) {
-    this.statsd.counter('http.' + STATSD_DOMAIN + '.codes.4xx', 1);
+    this.counter('http', 'codes.4xx', 1);
   } else if (req.status >= 500 && req.status < 600) {
-    this.statsd.counter('http.' + STATSD_DOMAIN + '.codes.5xx', 1);
+    this.counter('http', 'codes.5xx', 1);
   } else {
-    this.statsd.counter('http.' + STATSD_DOMAIN + '.codes.xxx', 1);
+    this.counter('http', 'codes.xxx', 1);
   }
 
   if (req.http_method == 'GET') {
-    this.statsd.counter('http.' + STATSD_DOMAIN + '.verbs.get', 1);
+    this.counter('http', 'verbs.get', 1);
   } else if (req.http_method == 'POST') {
-    this.statsd.counter('http.' + STATSD_DOMAIN + '.verbs.post', 1);
+    this.counter('http', 'verbs.post', 1);
   } else if (req.http_method == 'OPTIONS') {
-    this.statsd.counter('http.' + STATSD_DOMAIN + '.verbs.options', 1);
+    this.counter('http', 'verbs.options', 1);
   } else if (req.http_method == 'DELETE') {
-    this.statsd.counter('http.' + STATSD_DOMAIN + '.verbs.delete', 1);
+    this.counter('http', 'verbs.delete', 1);
   } else {
-    this.statsd.counter('http.' + STATSD_DOMAIN + '.verbs.other', 1);
+    this.counter('http', 'verbs.other', 1);
   }
 
   if (req.body_bytes_sent) {
-    this.statsd.counter('http.' + STATSD_DOMAIN + '.protocol.bytes', req.body_bytes_sent);
+    this.counter('http', 'protocol.bytes', req.body_bytes_sent);
   }
 
   if (req.request_time !== undefined && req.request_time !== null) {
-    this.statsd.timing('http.' + STATSD_DOMAIN + '.protocol.requesttime', parseFloat(req.request_time));
+    this.timing('http', 'protocol.requesttime', parseFloat(req.request_time));
   }
   if (req.upstream_response_time !== undefined && req.upstream_response_time !== null) {
-    this.statsd.timing('http.' + STATSD_DOMAIN + '.protocol.upstreamtime', parseFloat(req.upstream_response_time));
+    this.timing('http', 'protocol.upstreamtime', parseFloat(req.upstream_response_time));
   }
 
   if (req.cache !== undefined) {
     if (req.cache === null || req.cache.indexOf('-') >= 0) {
       req.cache = '-';
     }
-    this.statsd.counter('http.' + STATSD_DOMAIN + '.cache.' + req.cache, 1);
+    this.counter('http', 'cache.' + req.cache, 1);
   }
 };
 
