@@ -7,7 +7,6 @@ var Tail = require('tail').Tail,
   Server = require('./lib/server'),
   SDC = require('statsd-client');
 
-var STATSD_DOMAIN = process.env.STATSD_DOMAIN;
 var STATSD = process.env.STATSD;
 
 var Collector = function() {
@@ -23,16 +22,16 @@ var Collector = function() {
 };
 
 Collector.prototype.counter = function(key, sub, value) {
-  this.statsd.counter(key + '.' + STATSD_DOMAIN + '.' + sub, value);
+  this.statsd.counter(key + '.' + process.env.STATSD_DOMAIN + '.' + sub, value);
   if (process.env.STATSD_SUBDOMAIN) {
-    this.statsd.counter(key + '.' + STATSD_SUBDOMAIN + '.' + sub, value);
+    this.statsd.counter(key + '.' + process.env.STATSD_SUBDOMAIN + '.' + sub, value);
   }
 };
 
 Collector.prototype.timing = function(key, sub, value) {
-  this.statsd.timing(key + '.' + STATSD_DOMAIN + '.' + sub, value);
+  this.statsd.timing(key + '.' + process.env.STATSD_DOMAIN + '.' + sub, value);
   if (process.env.STATSD_SUBDOMAIN) {
-    this.statsd.timing(key + '.' + STATSD_SUBDOMAIN + '.' + sub, value);
+    this.statsd.timing(key + '.' + process.env.STATSD_SUBDOMAIN + '.' + sub, value);
   }
 };
 
