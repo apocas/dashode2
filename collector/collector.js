@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 var Tail = require('tail').Tail,
-  parser = require('./lib/parser'),
+  Parser = require('./lib/parser'),
   os = require('os'),
   config = require('../config.json'),
   Server = require('./lib/server'),
@@ -12,6 +12,8 @@ var STATSD = process.env.STATSD;
 var Collector = function() {
   this.requests = [];
   this.servers = [];
+
+  this.parser = new Parser();
 
   if (STATSD) {
     console.log('Connecting to statsd instance: ' + STATSD);
@@ -42,20 +44,20 @@ Collector.prototype.init = function() {
   this.tail = new Tail(this.path);
 
   this.tail.on('line', function(data) {
-    var req = parser(data);
-
-    if (self.isValid(req)) {
-      self.processDashode(req);
-      if (self.statsd) {
-        self.processStatsd(req);
+    self.parser.parse(data, function(req) {
+      if (self.isValid(req)) {
+        self.processDashode(req);
+        if (self.statsd) {
+          self.processStatsd(req);
+        }
+      } else {
+        console.log('Discarding request:');
+        console.log(req);
+        if (self.statsd) {
+          self.counter('http', 'parser.nok', 1);
+        }
       }
-    } else {
-      console.log('Discarding request:');
-      console.log(req);
-      if (self.statsd) {
-        self.counter('http', 'parser.nok', 1);
-      }
-    }
+    });
   });
 
   this.tail.on('error', function(error) {
