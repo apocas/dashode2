@@ -139,9 +139,8 @@ Collector.prototype.processStatsd = function(req) {
 Collector.prototype.loadDashode = function() {
   var self = this;
 
-  if (process.env.SERVER) {
-    this.servers.push(new Server(os.hostname(), process.env.SERVER));
-  }
+  this.servers.push(new Server(os.hostname(), process.env.SERVER || 'http://127.0.0.1:8080'));
+
   for (var i = 0; i < config.servers.length; i++) {
     var c = new Server(os.hostname(), config.servers[i]);
     this.servers.push(c);
