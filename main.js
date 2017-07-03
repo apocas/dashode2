@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 
-var Station = require('./server/lib/station');
-var Dashboard = require('./server/lib/dashboard');
-var Collector = require('./collector/collector');
+var Station = require('./server/lib/station'),
+  Dashboard = require('./server/lib/dashboard'),
+  child_process = require('child_process');
 
 
 function startServer(httpPort, collectorPort) {
@@ -13,15 +13,21 @@ function startServer(httpPort, collectorPort) {
   dashboard.init();
 }
 
-function startCollector(serverHostname) {
-  var collector = new Collector(serverHostname);
-  collector.init();
+
+function startCollector() {
+  console.log('Spawning collector process.');
+  var collectorProcess = child_process.fork(__dirname + '/collector/process');
+
+  setTimeout(function() {
+    collectorProcess.kill('SIGHUP');
+    startCollector();
+  }, 3600 * 1000);
 }
 
 
 var scenario = process.env.SCENARIO;
 
-if(process.argv.length > 2) {
+if (process.argv.length > 2) {
   scenario = process.argv[2];
 } else {
   scenario = scenario || 'collector';
